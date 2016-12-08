@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#FF1c8c49</color>
+    <color name="colorPrimaryDark">#FF0e545c</color>
+    <color name="colorAccent">#000000</color>
+
+    <!--main-->
+    <color name="colorStartButton">#FFb32020</color>
+    <color name="colorStopButton">#FF3f4266</color>
+    <color name="colorButtonbText">#FFFFFFFF</color>
+
+
+    <color name="colorTabMonitor">#FF1c8c49</color>
+    <color name="colorTabRecord">#FF0e545c</color>
+    <color name="colorTabWhiteText">#FFFFFFFF</color>
+    <color name="colorTabGrayText">#4CFFFFFF</color>
+
+    <color name="colorMonitorText">#000000</color>
+    <color name="colorListText">#000000</color>
+    <color name="colorListBorder">#000000</color>
+    <color name="colorListInside">#FFFFFFFF</color>
+
+    <!--mini window-->
+    <color name="colorMiniBackgraund">#000000</color>
+    <color name="colorMiniText">#FFFFFFFF</color>
 </resources>

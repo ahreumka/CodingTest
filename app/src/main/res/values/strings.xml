@@ -2,4 +2,12 @@
     <string name="app_name">PaceCounters</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="button_start">start</string>
+    <string name="button_stop">stop</string>
+    <string name="main_tab_title">Counter View</string>
+    <string name="record_tab_title">Counter Record</string>
+    <string name="location_title">Current Location</string>
+    <string name="toast_msg_fail_use_sensor">Can not use device sensor</string>
+    <string name="toast_msg_overlay_checked">Unable to access function due to \'Overlay\' permission denied.</string>
+
 </resources>

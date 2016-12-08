@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="toolbarStyle">@style/AppTheme.NoActionBar</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -17,4 +18,33 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+
+    <style name="MonitorButtonTheme" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/monitor_button_height</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:textColor">@color/colorButtonbText</item>
+        <item name="android:textSize">@dimen/monitor_button_text_size</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="ListTextTheme.end" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/colorListText</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:gravity">end</item>
+    </style>
+
+    <style name="ListTextTheme.start" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/colorListText</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:gravity">start</item>
+    </style>
+    <style name="TabTitleTextTheme" patent="AppTheme">
+        <item name="android:textSize">@dimen/monitor_location_text_size</item>
+        <item name="android:textColor">@color/colorTabWhiteText</item>
+    </style>
 </resources>
