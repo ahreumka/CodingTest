@@ -1,9 +1,9 @@
 package app.ahreum.com.pacecounters.ui;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -16,9 +16,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.util.Calendar;
-
 import app.ahreum.com.pacecounters.R;
+import app.ahreum.com.pacecounters.util.PaceCounterConst;
+import app.ahreum.com.pacecounters.util.PaceCounterUtil;
 
 public class MainActivity extends AppCompatActivity {
     private FragmentForMonitorScreen mFragmentMain;
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
+        registerAlramManagerReceiver();
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -57,8 +57,24 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
         tabLayout.setTabTextColors(ContextCompat.getColor(this, R.color.colorTabGrayText), ContextCompat.getColor(this, R.color.colorTabWhiteText));
         tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(this, R.color.colorTabRecord));
-        //makeAlarmManager();
     }
+    private BroadcastReceiver mAlramManagerReciever = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action == null)
+                return;
+            if (action.equals(PaceCounterConst.SAVE_COUNT_DATE)) {
+                PaceCounterUtil.insertListData(MainActivity.this);  //알람매니저로 부터 data저장요청을 받아 수행한다.
+            }
+        }
+    };
+    private void registerAlramManagerReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(PaceCounterConst.SAVE_COUNT_DATE);
+        registerReceiver(mAlramManagerReciever, filter);
+    }
+
     private void createFragmentView(){
         if(mFragmentMain == null){
             mFragmentMain = new FragmentForMonitorScreen();
@@ -94,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         mFragmentMain = null ;
         mFragmentRecord = null;
+        unregisterReceiver(mAlramManagerReciever);
     }
 
     /**
@@ -144,18 +161,4 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
     }
-//    private void makeAlarmManager(){
-//
-//    AlarmManager am = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-//    Intent intent = new Intent(MainActivity.this, BroadcastD.class);
-//
-//    PendingIntent sender = PendingIntent.getBroadcast(MainActivity.this, 0, intent, 0);
-//
-//
-//    calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), 23, 12, 0);
-//        mngr.setExact(AlarmManager.RTC_WAKEUP, actionTime + leftTime , mIntentSender);
-//
-//    //알람 예약
-//    am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), sender);
-//    }
 }

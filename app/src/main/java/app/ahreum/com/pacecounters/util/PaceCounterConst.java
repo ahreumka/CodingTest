@@ -13,6 +13,8 @@ public class PaceCounterConst {
     //map
     public static final String MAP_API_KEY ="NAcK62L8mj2R97icZSeN";
     public static final String MAP_SECRET_KEY ="vJw_gVbwkb";
+    //alarm manager
+    public static final String SAVE_COUNT_DATE ="app.ahreum.com.pacecounters.save.data";
 
     public static final String PACKAGE_STRING ="app.ahreum.com.pacecounters";
     public static final int PACE_COUNTER_TAB_MAIN_ID = 0;
@@ -41,6 +43,7 @@ public class PaceCounterConst {
     public static final String KEY_DATE =  "date";
     public static final String KEY_COUNT =  "count";
     public static final String KEY_DISTANCE =  "distance";
+    public static final String KEY_TRACKING =  "istracking";
 
     public static final String DATABASE_CREATE =
             "CREATE TABLE " + DB_TABLE
@@ -54,11 +57,13 @@ public class PaceCounterConst {
                     + KEY_DATE + ","
                     + KEY_COUNT + ","
                     + KEY_DISTANCE + ") VALUES";
+
     public static final String[] PACECOUNTER_SELECTION_DETAIL = new String[]{
-            PaceCounterConst.KEY_ID,
+            PaceCounterConst.KEY_ID,//
             PaceCounterConst.KEY_DATE,
             PaceCounterConst.KEY_COUNT,
             PaceCounterConst.KEY_DISTANCE
     };
+
 
 }

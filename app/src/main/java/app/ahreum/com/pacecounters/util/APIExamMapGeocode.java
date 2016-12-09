@@ -14,7 +14,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 
-public class APIExamMapGeocode extends Thread{
+public  class APIExamMapGeocode extends Thread{ //naver개발자 사이트 예제파일
         private boolean mRunning = false;
         @Override
         public void run() {

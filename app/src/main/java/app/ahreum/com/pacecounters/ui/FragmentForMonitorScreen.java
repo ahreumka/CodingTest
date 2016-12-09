@@ -7,7 +7,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +20,8 @@ import app.ahreum.com.pacecounters.R;
 import app.ahreum.com.pacecounters.util.APIExamMapGeocode;
 import app.ahreum.com.pacecounters.util.PaceCounterConst;
 import app.ahreum.com.pacecounters.util.PaceCounterUtil;
+
+import static android.R.attr.format;
 
 /**
  * Created by ahreum on 2016-12-06.
@@ -38,17 +39,20 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         updateLayout(inflater, container);
-        getDeviceSensor();
         if(savedInstanceState != null){
             mTvWalk.setText(savedInstanceState.getString(PaceCounterConst.KEY_COUNT));
             mTvDistance.setText(savedInstanceState.getString(PaceCounterConst.KEY_DISTANCE));
+            isTracking = savedInstanceState.getBoolean(PaceCounterConst.KEY_TRACKING);
         }
+        getDeviceSensor();
+        changeButtonState();
         return mContentView;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putBoolean(PaceCounterConst.KEY_TRACKING,isTracking);
         outState.putString(PaceCounterConst.KEY_COUNT,mTvWalk.getText().toString());
         outState.putString(PaceCounterConst.KEY_DISTANCE,mTvDistance.getText().toString());
     }
@@ -134,6 +138,13 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
             PaceCounterUtil.setTrackState(getContext(), !isTracking);
             changeButtonState();
             changeSensorState();
+            if(isTracking){
+                getDeviceSensor();
+                PaceCounterUtil.makeAlarmManager(getContext());//측정을 시작했을때 매일 데이터를 저장하도록 알람매니저 등록
+            }else{
+                unregisterListeners();
+                PaceCounterUtil.removeAlarmManager(getContext());//측정을 멈추면 알람매니저도 제거해줘야한다
+            }
         }
     }
 
@@ -147,5 +158,6 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
         mTvLocation = null;
         unregisterListeners();
     }
+
 
 }
