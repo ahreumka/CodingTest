@@ -9,5 +9,8 @@
     <string name="location_title">Current Location</string>
     <string name="toast_msg_fail_use_sensor">Can not use device sensor</string>
     <string name="toast_msg_overlay_checked">Unable to access function due to \'Overlay\' permission denied.</string>
+    <string name="toast_msg_cannot_get_location">Location information is unavailable.</string>
+
+
 
 </resources>

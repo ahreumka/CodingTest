@@ -1,5 +1,9 @@
 package app.ahreum.com.pacecounters.ui;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +15,8 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.util.Calendar;
 
 import app.ahreum.com.pacecounters.R;
 
@@ -51,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
         tabLayout.setTabTextColors(ContextCompat.getColor(this, R.color.colorTabGrayText), ContextCompat.getColor(this, R.color.colorTabWhiteText));
         tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(this, R.color.colorTabRecord));
+        //makeAlarmManager();
     }
     private void createFragmentView(){
         if(mFragmentMain == null){
@@ -81,6 +88,14 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mFragmentMain = null ;
+        mFragmentRecord = null;
+    }
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -129,4 +144,18 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
     }
+//    private void makeAlarmManager(){
+//
+//    AlarmManager am = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+//    Intent intent = new Intent(MainActivity.this, BroadcastD.class);
+//
+//    PendingIntent sender = PendingIntent.getBroadcast(MainActivity.this, 0, intent, 0);
+//
+//
+//    calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), 23, 12, 0);
+//        mngr.setExact(AlarmManager.RTC_WAKEUP, actionTime + leftTime , mIntentSender);
+//
+//    //알람 예약
+//    am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), sender);
+//    }
 }
