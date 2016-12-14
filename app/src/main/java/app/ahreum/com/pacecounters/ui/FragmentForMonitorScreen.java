@@ -6,6 +6,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,23 +24,35 @@ import app.ahreum.com.pacecounters.util.APIExamMapGeocode;
 import app.ahreum.com.pacecounters.util.PaceCounterConst;
 import app.ahreum.com.pacecounters.util.PaceCounterUtil;
 
-import static android.R.attr.format;
 
 /**
  * Created by ahreum on 2016-12-06.
  */
 
-public class FragmentForMonitorScreen extends Fragment implements View.OnClickListener{
+public class FragmentForMonitorScreen extends Fragment implements View.OnClickListener, LocationListener{
     private View mContentView;
     private Button mBtnTrack;
-    private TextView mTvWalk, mTvDistance, mTvLocation;
+    private TextView mTvWalk, mTvDistance;
+    public TextView mTvLocation;
     private SensorManager mSensorManager;
     private boolean isTracking;
+    private APIExamMapGeocode mMapGeocode;
+
+    //get location
+    private LocationManager locationManager;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+        try {
+            mMapGeocode = new APIExamMapGeocode(this);
+            locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, this);
+
+        }catch (SecurityException e){
+            e.printStackTrace();
+        }
         updateLayout(inflater, container);
         if(savedInstanceState != null){
             mTvWalk.setText(savedInstanceState.getString(PaceCounterConst.KEY_COUNT));
@@ -91,7 +106,6 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
         mTvDistance.setText(PaceCounterUtil.getDistance());
     }
     private void updateLayout(LayoutInflater inflater, ViewGroup container) {
-        new APIExamMapGeocode().start();
         mContentView = inflater.inflate(R.layout.fragment_monitor, container, false);
         mTvWalk = (TextView) mContentView.findViewById(R.id.walk_txtview);
         mTvDistance = (TextView) mContentView.findViewById(R.id.distance_txtview);
@@ -159,5 +173,27 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
         unregisterListeners();
     }
 
+    //LocationListener start
+    @Override
+    public void onLocationChanged(Location location) {
+        String msg = location.getLatitude()
+                      +  "," + location.getLongitude();
+        mMapGeocode.setLocationCode(msg);
+        mMapGeocode.execute();
+    }
 
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+//        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+//        startActivity(intent);
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+    }
+    //LocationListener end
 }
