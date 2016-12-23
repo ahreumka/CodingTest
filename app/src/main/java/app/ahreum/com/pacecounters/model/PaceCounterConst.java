@@ -1,4 +1,4 @@
-package app.ahreum.com.pacecounters.util;
+package app.ahreum.com.pacecounters.model;
 
 import android.net.Uri;
 

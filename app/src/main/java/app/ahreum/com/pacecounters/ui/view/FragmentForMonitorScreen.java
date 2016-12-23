@@ -1,4 +1,4 @@
-package app.ahreum.com.pacecounters.ui;
+package app.ahreum.com.pacecounters.ui.view;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,16 +20,19 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import app.ahreum.com.pacecounters.R;
-import app.ahreum.com.pacecounters.util.APIExamMapGeocode;
-import app.ahreum.com.pacecounters.util.PaceCounterConst;
-import app.ahreum.com.pacecounters.util.PaceCounterUtil;
+import app.ahreum.com.pacecounters.model.APIExamMapGeocode;
+import app.ahreum.com.pacecounters.model.PaceCounterConst;
+import app.ahreum.com.pacecounters.model.PaceCounterUtil;
+import app.ahreum.com.pacecounters.ui.presenter.MonitorContractor;
+import app.ahreum.com.pacecounters.ui.presenter.MonitorPresenter;
 
 
 /**
  * Created by ahreum on 2016-12-06.
  */
 
-public class FragmentForMonitorScreen extends Fragment implements View.OnClickListener, LocationListener{
+public class FragmentForMonitorScreen extends Fragment implements View.OnClickListener, LocationListener, MonitorContractor.View{
+    private MonitorPresenter monitorPresenter ;
     private View mContentView;
     private Button mBtnTrack;
     private TextView mTvWalk, mTvDistance;
@@ -45,6 +48,8 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+        monitorPresenter = new MonitorPresenter();
+        monitorPresenter.attachView(this);
         try {
             mMapGeocode = new APIExamMapGeocode(this);
             locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
@@ -76,6 +81,7 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
     public void onResume() {
         super.onResume();
         isTracking = PaceCounterUtil.getTrackState(getContext());
+        mMapGeocode.execute();
         changeSensorState();
         changeButtonState();
 
@@ -170,6 +176,7 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
         mTvWalk = null;
         mTvDistance = null;
         mTvLocation = null;
+        monitorPresenter.detachView();
         unregisterListeners();
     }
 

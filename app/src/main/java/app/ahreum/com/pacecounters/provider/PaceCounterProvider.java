@@ -16,7 +16,7 @@ import android.support.annotation.Nullable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import app.ahreum.com.pacecounters.util.PaceCounterConst;
+import app.ahreum.com.pacecounters.model.PaceCounterConst;
 
 /**
  * Created by ahreum on 2016-12-06.
@@ -40,7 +40,7 @@ public class PaceCounterProvider extends ContentProvider {
         mContext = getContext();
         dbHelper =  new PaceCounterDatabaseHelper(mContext);
         mDataBase = dbHelper.getWritableDatabase();
-        return (mDataBase == null) ? false: true;
+        return mDataBase != null;
     }
 
     @Nullable

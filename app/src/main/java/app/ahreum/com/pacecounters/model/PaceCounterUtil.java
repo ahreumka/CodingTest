@@ -1,4 +1,4 @@
-package app.ahreum.com.pacecounters.util;
+package app.ahreum.com.pacecounters.model;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -14,11 +14,11 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import app.ahreum.com.pacecounters.ui.MainActivity;
+import app.ahreum.com.pacecounters.ui.view.MainActivity;
 
 
 /**
- * Created by Ahreum on 2016-12-08.
+ * Created by ahreum on 2016-12-08.
  */
 
 public class PaceCounterUtil {

@@ -1,4 +1,4 @@
-package app.ahreum.com.pacecounters.ui;
+package app.ahreum.com.pacecounters.ui.view;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,8 +17,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import app.ahreum.com.pacecounters.R;
-import app.ahreum.com.pacecounters.util.PaceCounterConst;
-import app.ahreum.com.pacecounters.util.PaceCounterUtil;
+import app.ahreum.com.pacecounters.model.PaceCounterConst;
+import app.ahreum.com.pacecounters.model.PaceCounterUtil;
+
+/**
+ * management Tabbed layout
+ * doesn't access any model -> presenter not needed *
+ **/
 
 public class MainActivity extends AppCompatActivity {
     private FragmentForMonitorScreen mFragmentMain;
