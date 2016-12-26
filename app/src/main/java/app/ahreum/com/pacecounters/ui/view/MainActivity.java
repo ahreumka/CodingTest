@@ -82,10 +82,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void createFragmentView(){
         if(mFragmentMain == null){
-            mFragmentMain = new FragmentForMonitorScreen();
+            mFragmentMain = FragmentForMonitorScreen.newInstance(PaceCounterConst.MONITOR_FRAGMENT_INDEX);
         }
         if(mFragmentRecord == null){
-            mFragmentRecord = new FragmentForRecordList();
+            mFragmentRecord = FragmentForRecordList.newInstance(PaceCounterConst.LIST_FRAGMENT_INDEX);
         }
     }
     @Override
@@ -133,9 +133,9 @@ public class MainActivity extends AppCompatActivity {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position){
-                case 0:
+                case PaceCounterConst.MONITOR_FRAGMENT_INDEX:
                     return mFragmentMain;
-                case 1:
+                case PaceCounterConst.LIST_FRAGMENT_INDEX:
                     return mFragmentRecord;
                 default:
                     return mFragmentMain;
@@ -158,9 +158,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
-                case 0:
+                case PaceCounterConst.MONITOR_FRAGMENT_INDEX:
                     return getString(R.string.main_tab_title);
-                case 1:
+                case PaceCounterConst.LIST_FRAGMENT_INDEX:
                     return getString(R.string.record_tab_title);
             }
             return null;

@@ -33,6 +33,15 @@ public class FragmentForRecordList extends Fragment implements ListContractor.Vi
     private Context mContext;
     private PaceCounterAdapter mAdapter;
 
+    //When the memory is full, the fragment is destroyed and regenerated, and the parameter is not received by the constructor. However, if you use Bundle, the bundle will come back.
+    public static FragmentForRecordList newInstance(int index) {
+        FragmentForRecordList fragment = new FragmentForRecordList();
+        Bundle args =  new Bundle();
+        args.putInt("index", index);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         listPresenter = new ListPresenter();

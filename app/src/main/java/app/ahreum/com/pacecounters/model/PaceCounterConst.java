@@ -5,6 +5,7 @@ import android.net.Uri;
 
 /**
  * Created by ahreum on 2016-12-06.
+ * Enums often require more than twice as much memory as static constants. strictly avoid using enums on Android.
  */
 
 public class PaceCounterConst {
@@ -65,5 +66,7 @@ public class PaceCounterConst {
             PaceCounterConst.KEY_DISTANCE
     };
 
-
+    //fragment
+    public static final int  MONITOR_FRAGMENT_INDEX = 0;
+    public static final int  LIST_FRAGMENT_INDEX = 1;
 }

@@ -44,6 +44,15 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
     //get location
     private LocationManager locationManager;
 
+    //When the memory is full, the fragment is destroyed and regenerated, and the parameter is not received by the constructor. However, if you use Bundle, the bundle will come back.
+    public static FragmentForMonitorScreen newInstance(int index) {
+        FragmentForMonitorScreen fragment = new FragmentForMonitorScreen();
+        Bundle args =  new Bundle();
+        args.putInt("index", index);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

@@ -10,7 +10,6 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import app.ahreum.com.pacecounters.R;
-import app.ahreum.com.pacecounters.ui.view.FragmentForRecordList;
 
 /**
  * Created by ahreum on 2016-12-23.
