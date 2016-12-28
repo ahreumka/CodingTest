@@ -40,7 +40,7 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
     private SensorManager mSensorManager;
     private boolean isTracking;
     private APIExamMapGeocode mMapGeocode;
-
+    String locationMsg;
     //get location
     private LocationManager locationManager;
 
@@ -59,15 +59,15 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
         super.onCreateView(inflater, container, savedInstanceState);
         monitorPresenter = new MonitorPresenter();
         monitorPresenter.attachView(this);
+        updateLayout(inflater, container);
         try {
-            mMapGeocode = new APIExamMapGeocode(this);
+            mMapGeocode = new APIExamMapGeocode(mTvLocation);
             locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, this);
-
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+            onLocationChanged(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
         }catch (SecurityException e){
             e.printStackTrace();
         }
-        updateLayout(inflater, container);
         if(savedInstanceState != null){
             mTvWalk.setText(savedInstanceState.getString(PaceCounterConst.KEY_COUNT));
             mTvDistance.setText(savedInstanceState.getString(PaceCounterConst.KEY_DISTANCE));
@@ -90,14 +90,14 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
     public void onResume() {
         super.onResume();
         isTracking = PaceCounterUtil.getTrackState(getContext());
-        mMapGeocode.execute();
+        mMapGeocode.execute(locationMsg);
         changeSensorState();
         changeButtonState();
 
     }
     private boolean getDeviceSensor(){
         mSensorManager = (SensorManager)getContext().getSystemService(Context.SENSOR_SERVICE);
-        Sensor countSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        Sensor countSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER); // api level 19 => need to change
         if(countSensor != null){
             mSensorManager.registerListener(mSensorListener, countSensor, SensorManager.SENSOR_DELAY_NORMAL);
             PaceCounterUtil.preferenceCount = PaceCounterUtil.getPreStepCount(getContext());
@@ -127,7 +127,6 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
         mTvLocation = (TextView) mContentView.findViewById(R.id.location_txtview);
         mBtnTrack = (Button) mContentView.findViewById(R.id.track_button);
         mBtnTrack.setOnClickListener(this);
-        mTvLocation.setText(PaceCounterUtil.address);
     }
     private void changeButtonState(){
         if(isTracking){//isTracking  state
@@ -153,6 +152,8 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
         public void onAccuracyChanged(Sensor sensor, int i) {
         }
     };
+
+
     private void changeSensorState(){
         if(isTracking){//service need to run
             getDeviceSensor();
@@ -192,10 +193,13 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
     //LocationListener start
     @Override
     public void onLocationChanged(Location location) {
-        String msg = location.getLatitude()
-                      +  "," + location.getLongitude();
-        mMapGeocode.setLocationCode(msg);
-        mMapGeocode.execute();
+        if(location == null){
+            return;
+        }else {
+            locationMsg = location.getLatitude()
+                    + "," + location.getLongitude();
+            mMapGeocode.execute(locationMsg);
+        }
     }
 
     @Override

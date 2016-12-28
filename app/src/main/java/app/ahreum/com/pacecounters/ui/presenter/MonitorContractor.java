@@ -10,8 +10,6 @@ public interface MonitorContractor {
     }
     interface Presenter{
         void attachView(View view);//viewSet
-
         void detachView();
-
     }
 }

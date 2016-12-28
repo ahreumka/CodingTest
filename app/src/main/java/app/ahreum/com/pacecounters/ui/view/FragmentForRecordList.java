@@ -78,7 +78,9 @@ public class FragmentForRecordList extends Fragment implements ListContractor.Vi
     }
     @Override
     public void notifyAdapter() {
-        mAdapter.notifyDataSetChanged();
+        if(mAdapter!=null){
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
