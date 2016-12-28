@@ -2,7 +2,6 @@ package app.ahreum.com.pacecounters.model;
 
 import android.net.Uri;
 
-
 /**
  * Created by ahreum on 2016-12-06.
  * Enums often require more than twice as much memory as static constants. strictly avoid using enums on Android.
@@ -11,6 +10,8 @@ import android.net.Uri;
 public class PaceCounterConst {
     private PaceCounterConst (){
     }
+    public static boolean DEBUG = true;
+    public static String TAG = "PaceCounters";
     //map
     public static final String MAP_API_KEY ="NAcK62L8mj2R97icZSeN";
     public static final String MAP_SECRET_KEY ="vJw_gVbwkb";
@@ -69,4 +70,10 @@ public class PaceCounterConst {
     //fragment
     public static final int  MONITOR_FRAGMENT_INDEX = 0;
     public static final int  LIST_FRAGMENT_INDEX = 1;
+
+    //paceCount service
+    public static final float  ALPHA  = 0.8f;
+    public static final int SHAKE_THRESHOLD = 9;
+    public static final String ACTION_COUNT_SERVICE = "update_step_count";
+
 }

@@ -1,5 +1,7 @@
 package app.ahreum.com.pacecounters.model;
 
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
@@ -26,9 +28,7 @@ public class PaceCounterUtil {
     public static String address = "";
     //glover value
     public static int steps = 0; //distance를 계산하기위한 base value
-    public static int sensorCount = 0; //센서에서 넘어오는값, 사용자가 중지해도 증가하고 있기때문에 정지했을 때 preferenceCount에 저장해둬야한다
-    public static int preferenceCount = 0;//사용자가 재시작했을 지점과 기존에 중지했을 때의 차이를 계산하기위한값
-    public static double average_stride = 0.8; // default step stride 0.8m
+    private static double average_stride = 0.8; // default step stride 0.8m
     //service const
     public static boolean  isUserStopTrck = false;
     //general toast
@@ -42,7 +42,7 @@ public class PaceCounterUtil {
         mToast.show();
     }
     //현재 걸음 추적상태인지, 몇 걸음을 걸었는지 계산하기 위한 SharedPreferences
-    public static SharedPreferences getSharedPreferences(Context context) {
+    private static SharedPreferences getSharedPreferences(Context context) {
         return context.getSharedPreferences(PaceCounterConst.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
     }
 
@@ -55,16 +55,6 @@ public class PaceCounterUtil {
     public static boolean getTrackState(Context context) {
         SharedPreferences pref = getSharedPreferences(context);
         return pref.getBoolean(PaceCounterConst.KEY_TRACK_STATE , false);
-    }
-    static public void setPreStepCount(Context context, int preStep){
-        SharedPreferences prefTrack = getSharedPreferences(context);
-        SharedPreferences.Editor editor = prefTrack.edit();
-        editor.putInt(PaceCounterConst.KEY_STEP_COUNT, preStep);
-        editor.commit();
-    }
-    public static int getPreStepCount(Context context) {
-        SharedPreferences pref = getSharedPreferences(context);
-        return pref.getInt(PaceCounterConst.KEY_STEP_COUNT , 0);
     }
 
     //save daily data
@@ -108,5 +98,16 @@ public class PaceCounterUtil {
     }
     public static long getTimeNow() {
         return SystemClock.elapsedRealtime();
+    }
+
+    //service
+    public static boolean isServiceRunning(Context context) {
+        ActivityManager manager = (ActivityManager)context.getSystemService(Activity.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if ( (PaceCounterConst.PACKAGE_STRING +".service.StepCountService").equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

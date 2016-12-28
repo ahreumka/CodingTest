@@ -27,6 +27,8 @@
             android:authorities="app.ahreum.com.pacecounters.provider"
             android:name=".provider.PaceCounterProvider">
         </provider>
+        <service android:name=".service.StepCountService">
+        </service>
     </application>
 
 </manifest>

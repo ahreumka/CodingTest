@@ -1,11 +1,9 @@
 package app.ahreum.com.pacecounters.ui.view;
 
-import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -13,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +22,7 @@ import app.ahreum.com.pacecounters.R;
 import app.ahreum.com.pacecounters.model.APIExamMapGeocode;
 import app.ahreum.com.pacecounters.model.PaceCounterConst;
 import app.ahreum.com.pacecounters.model.PaceCounterUtil;
+import app.ahreum.com.pacecounters.service.StepCountService;
 import app.ahreum.com.pacecounters.ui.presenter.MonitorContractor;
 import app.ahreum.com.pacecounters.ui.presenter.MonitorPresenter;
 
@@ -32,16 +32,14 @@ import app.ahreum.com.pacecounters.ui.presenter.MonitorPresenter;
  */
 
 public class FragmentForMonitorScreen extends Fragment implements View.OnClickListener, LocationListener, MonitorContractor.View{
+
     private MonitorPresenter monitorPresenter ;
     private View mContentView;
     private Button mBtnTrack;
-    private TextView mTvWalk, mTvDistance;
-    public TextView mTvLocation;
-    private SensorManager mSensorManager;
+    private TextView mTvWalk, mTvDistance, mTvLocation;
     private boolean isTracking;
     private APIExamMapGeocode mMapGeocode;
-    String locationMsg;
-    //get location
+    private String locationMsg;
     private LocationManager locationManager;
 
     //When the memory is full, the fragment is destroyed and regenerated, and the parameter is not received by the constructor. However, if you use Bundle, the bundle will come back.
@@ -73,8 +71,8 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
             mTvDistance.setText(savedInstanceState.getString(PaceCounterConst.KEY_DISTANCE));
             isTracking = savedInstanceState.getBoolean(PaceCounterConst.KEY_TRACKING);
         }
-        getDeviceSensor();
-        changeButtonState();
+        registerCounterServiceReceiver();
+        mMapGeocode.execute(locationMsg);
         return mContentView;
     }
 
@@ -90,36 +88,28 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
     public void onResume() {
         super.onResume();
         isTracking = PaceCounterUtil.getTrackState(getContext());
-        mMapGeocode.execute(locationMsg);
-        changeSensorState();
         changeButtonState();
 
     }
-    private boolean getDeviceSensor(){
-        mSensorManager = (SensorManager)getContext().getSystemService(Context.SENSOR_SERVICE);
-        Sensor countSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER); // api level 19 => need to change
-        if(countSensor != null){
-            mSensorManager.registerListener(mSensorListener, countSensor, SensorManager.SENSOR_DELAY_NORMAL);
-            PaceCounterUtil.preferenceCount = PaceCounterUtil.getPreStepCount(getContext());
-            return true;
-        }else{
-            PaceCounterUtil.showToast(getContext(), getResources().getString(R.string.toast_msg_fail_use_sensor));
-            return false;
+    @Override
+    public void onClick(View view) {
+        if(view.getId() == R.id.track_button){
+            isTracking = !isTracking;
+            PaceCounterUtil.setTrackState(getContext(), isTracking);
+            changeButtonState();
+            if(isTracking){
+                if (!PaceCounterUtil.isServiceRunning(getContext())) {
+                    Intent intent = new Intent(getActivity().getApplication(), StepCountService.class);
+                    getContext().startService(intent);
+                }
+                PaceCounterUtil.makeAlarmManager(getContext());//측정을 시작했을때 매일 데이터를 저장하도록 알람매니저 등록
+            }else{
+                getContext().stopService(new Intent(getActivity().getApplication(), StepCountService.class));
+                PaceCounterUtil.removeAlarmManager(getContext());//측정을 멈추면 알람매니저도 제거해줘야한다
+            }
         }
     }
-    private void unregisterListeners() {
-        PaceCounterUtil.setPreStepCount(getContext(),PaceCounterUtil.sensorCount);
-        clearData();
-        SensorManager sensorManager =
-                (SensorManager) getActivity().getSystemService(Activity.SENSOR_SERVICE);
-        sensorManager.unregisterListener(mSensorListener);
-    }
-    private void clearData(){
-        PaceCounterUtil.steps = 0;
-        if(mTvWalk==null || mTvDistance==null) return;
-        mTvWalk.setText(String.valueOf(PaceCounterUtil.steps));
-        mTvDistance.setText(PaceCounterUtil.getDistance());
-    }
+
     private void updateLayout(LayoutInflater inflater, ViewGroup container) {
         mContentView = inflater.inflate(R.layout.fragment_monitor, container, false);
         mTvWalk = (TextView) mContentView.findViewById(R.id.walk_txtview);
@@ -139,45 +129,24 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
             mBtnTrack.setBackgroundColor(ContextCompat.getColor(getContext(),R.color.colorStartButton));
         }
     }
+    private void registerCounterServiceReceiver(){
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(PaceCounterConst.ACTION_COUNT_SERVICE );
+        getContext().registerReceiver(countServiceReceiver, filter);
 
-    private final SensorEventListener mSensorListener = new SensorEventListener() {
-        @Override
-        public void onSensorChanged(SensorEvent sensorEvent) {
-            PaceCounterUtil.sensorCount =(int) sensorEvent.values[0];
-            PaceCounterUtil.steps = PaceCounterUtil.sensorCount -PaceCounterUtil.preferenceCount;
-            mTvWalk.setText(String.valueOf(PaceCounterUtil.steps));
-            mTvDistance.setText(PaceCounterUtil.getDistance());
-        }
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int i) {
-        }
-    };
-
-
-    private void changeSensorState(){
-        if(isTracking){//service need to run
-            getDeviceSensor();
-        }else{//stop listener
-           unregisterListeners();
-        }
     }
-    @Override
-    public void onClick(View view) {
-        if(view.getId() == R.id.track_button){
-            isTracking = !isTracking;
-            PaceCounterUtil.setTrackState(getContext(), !isTracking);
-            changeButtonState();
-            changeSensorState();
-            if(isTracking){
-                getDeviceSensor();
-                PaceCounterUtil.makeAlarmManager(getContext());//측정을 시작했을때 매일 데이터를 저장하도록 알람매니저 등록
-            }else{
-                unregisterListeners();
-                PaceCounterUtil.removeAlarmManager(getContext());//측정을 멈추면 알람매니저도 제거해줘야한다
+    private final BroadcastReceiver countServiceReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction() == null){
+                return;
+            }
+            if(intent.getAction().equals(PaceCounterConst.ACTION_COUNT_SERVICE)){
+                mTvWalk.setText(String.valueOf(PaceCounterUtil.steps));
+                mTvDistance.setText(PaceCounterUtil.getDistance());
             }
         }
-    }
-
+    };
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -187,7 +156,11 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
         mTvDistance = null;
         mTvLocation = null;
         monitorPresenter.detachView();
-        unregisterListeners();
+        try {
+            getContext().unregisterReceiver(countServiceReceiver);
+        }catch (Exception e) {
+            log("onDestroy : remote ctr br is unresistered already");
+        }
     }
 
     //LocationListener start
@@ -208,12 +181,15 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
 
     @Override
     public void onProviderEnabled(String s) {
-//        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//        startActivity(intent);
     }
 
     @Override
     public void onProviderDisabled(String s) {
     }
     //LocationListener end
+
+    private void log(String msg){
+        String TAG =PaceCounterConst.TAG + " : FragmentForMonitorScreen";
+        if(PaceCounterConst.DEBUG) Log.i(TAG, msg);
+    }
 }
