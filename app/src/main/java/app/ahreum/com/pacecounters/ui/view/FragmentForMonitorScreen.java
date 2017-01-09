@@ -89,6 +89,12 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
         super.onResume();
         isTracking = PaceCounterUtil.getTrackState(getContext());
         changeButtonState();
+        if(PaceCounterUtil.isServiceRunning(getContext())){
+           PaceCounterUtil.getVRServiceBinder().endForeGround();
+        }
+        if(!PaceCounterUtil.isServiceRunning(getContext())){
+            PaceCounterUtil.bindToService(getContext());
+        }
 
     }
     @Override
@@ -98,10 +104,6 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
             PaceCounterUtil.setTrackState(getContext(), isTracking);
             changeButtonState();
             if(isTracking){
-                if (!PaceCounterUtil.isServiceRunning(getContext())) {
-                    Intent intent = new Intent(getActivity().getApplication(), StepCountService.class);
-                    getContext().startService(intent);
-                }
                 PaceCounterUtil.makeAlarmManager(getContext());//측정을 시작했을때 매일 데이터를 저장하도록 알람매니저 등록
             }else{
                 getContext().stopService(new Intent(getActivity().getApplication(), StepCountService.class));
@@ -147,6 +149,15 @@ public class FragmentForMonitorScreen extends Fragment implements View.OnClickLi
             }
         }
     };
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(PaceCounterUtil.isServiceRunning(getContext())){
+            PaceCounterUtil.getVRServiceBinder().startForeGround();
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();

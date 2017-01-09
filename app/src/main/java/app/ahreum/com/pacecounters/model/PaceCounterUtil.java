@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.IBinder;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.widget.Toast;
@@ -16,6 +19,7 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import app.ahreum.com.pacecounters.service.StepCountService;
 import app.ahreum.com.pacecounters.ui.view.MainActivity;
 
 
@@ -33,6 +37,7 @@ public class PaceCounterUtil {
     public static boolean  isUserStopTrck = false;
     //general toast
     public static Toast mToast = null;
+    private static StepCountService mServiceBinder;
 
     public static void showToast(Context context, CharSequence msg){
         if(mToast != null){
@@ -110,4 +115,27 @@ public class PaceCounterUtil {
         }
         return false;
     }
+
+    public static void bindToService(Context context){
+        if(!isServiceRunning(context)){
+            Intent intent = new Intent(context,StepCountService.class);
+            context.startService(intent);
+            Intent bindIntent = new Intent(context,StepCountService.class);
+            context.bindService(bindIntent,mConnection,Context.BIND_AUTO_CREATE);
+        }
+    }
+    public static StepCountService getVRServiceBinder(){
+        return mServiceBinder;
+    }
+
+    public static ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder lVRBinder){
+            mServiceBinder = ((StepCountService.CountServiceBinder)lVRBinder).getService();
+        }
+        @Override
+        public void onServiceDisconnected(ComponentName className) {
+            mServiceBinder = null;
+        }
+    };
 }
