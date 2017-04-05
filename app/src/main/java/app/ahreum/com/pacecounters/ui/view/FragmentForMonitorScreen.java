@@ -18,6 +18,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
+
 import app.ahreum.com.pacecounters.R;
 import app.ahreum.com.pacecounters.model.APIExamMapGeocode;
 import app.ahreum.com.pacecounters.model.PaceCounterConst;

@@ -13,12 +13,23 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import java.util.List;
 
 import app.ahreum.com.pacecounters.R;
+import app.ahreum.com.pacecounters.model.GitHubClient;
+import app.ahreum.com.pacecounters.model.GitHubRepo;
 import app.ahreum.com.pacecounters.model.PaceCounterConst;
 import app.ahreum.com.pacecounters.model.PaceCounterUtil;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * management Tabbed layout
@@ -62,6 +73,29 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
         tabLayout.setTabTextColors(ContextCompat.getColor(this, R.color.colorTabGrayText), ContextCompat.getColor(this, R.color.colorTabWhiteText));
         tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(this, R.color.colorTabRecord));
+        Retrofit.Builder builder = new Retrofit.Builder()
+                .baseUrl("https://api.github.com")
+                .addConverterFactory(GsonConverterFactory.create());
+        Retrofit retrofit = builder.build();
+        GitHubClient client = retrofit.create(GitHubClient.class);
+        Call<List<GitHubRepo>> call = client.reposForUser("fs-opensource");
+
+        call.enqueue(new Callback<List<GitHubRepo>>() {
+            @Override
+            public void onResponse(Call<List<GitHubRepo>> call, Response<List<GitHubRepo>> response) {
+                List<GitHubRepo> repos= response.body();
+                System.out.println(repos);
+                for(int i=0; i<repos.size(); i++){
+                    System.out.println(repos.get(i));
+                    Log.d("ahreum","i : "+i+" , "+repos.get(i).getName());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<GitHubRepo>> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "error", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
     private BroadcastReceiver mAlramManagerReciever = new BroadcastReceiver() {
         @Override

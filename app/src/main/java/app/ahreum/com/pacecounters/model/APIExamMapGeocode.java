@@ -28,6 +28,7 @@ public  class APIExamMapGeocode extends AsyncTask<String, Void, String>{ //naver
     private String request(String locationCode){
        // StringBuffer response = new StringBuffer();  //thread safe but doesn't need for this function. change to StringBuilder
         StringBuilder response = new StringBuilder();
+        response.length();
         try {
             //String addr = URLEncoder.encode("불정로 6", "utf-8");
             //String apiURL = "https://openapi.naver.com/v1/map/geocode.xml?query=" + addr; // 주소 -> 좌표 xml
